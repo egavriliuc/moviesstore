@@ -1,0 +1,22 @@
+<h1>Movie Statistics</h1>
+
+<div class="module">
+    <h2>Most Reviewed Movie</h2>
+    {% if reviewed_movie%}
+        <p>{{ reviewed_movie.movie__name }}</p>
+        <p>Total reviews: {{ reviewed_movie.total }}</p>
+    {% else %}
+        <p>No reviews yet.</p>
+    {% endif %}
+
+</div>
+
+<div class="module">
+    <h2>Most Purchased Movie</h2>
+    {% if purchased_movie %}
+        <p>{{ purchased_movie.movie__name }}</p>
+        <p>Total copies purchased: {{ purchased_movie.total }}</p>
+    {% else%}
+        <p>No purchases yet.</p>
+    {% endif %}
+</div>

@@ -1,5 +1,8 @@
 from django.contrib import admin
-from .models import Movie, Review
+from .models import Movie, Review, Statistic
+from django.db.models import Count, Sum
+from django.shortcuts import render
+from cart.models import Item
 
 class MovieAdmin(admin.ModelAdmin):
     ordering = ['name']
@@ -7,4 +10,43 @@ class MovieAdmin(admin.ModelAdmin):
 
 admin.site.register(Movie, MovieAdmin)
 admin.site.register(Review)
+@admin.register(Statistic)
+class StatisticsAdmin(admin.ModelAdmin):
+    change_list_template = "admin/statistics.html"
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    def has_view_permission(self, request, obj=None):
+        return True
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def changelist_view(self, request, extra_context=None):
+        most_reviewed = (
+            Review.objects.values('movie_id', 'movie__name')
+            .annotate(total=Count('id'))
+            .order_by('-total', 'movie_id')
+            .first()
+        )
+
+        most_purchased = (
+            Item.objects.values('movie_id', 'movie__name')
+            .annotate(total=Sum('quantity'))
+            .order_by('-total', 'movie_id')
+            .first()
+        )
+
+        context = self.admin_site.each_context(request)
+        context.update({
+            'opts': self.model._meta,
+            'reviewed_movie': most_reviewed,
+            'purchased_movie': most_purchased,
+        })
+
+        return render(request, self.change_list_template, context)
 # Register your models here.

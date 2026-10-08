@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Movie, Review
+from .models import Movie, Review, Statistic
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, Sum
+from cart.models import Item
 
 def index(request):
     search_term = request.GET.get('search')
@@ -67,3 +69,32 @@ def report_review(request, id, review_id):
     review = get_object_or_404(Review, id=review_id)
     review.delete()
     return redirect('movies.show', id=id)
+
+def statistics(request):
+    most_reviewed = Review.objects.values('movie').annotate(
+        total=Count('id')
+    ).order_by('-total', 'movie').first()
+
+    most_purchased = Item.objects.values('movie').annotate(
+        total=Sum('quantity')
+    ).order_by('-total', 'movie').first()
+
+    reviewed_movie = (
+        Movie.objects.filter(id=most_reviewed['movie']).first()
+        if most_reviewed else None
+    )
+
+    purchased_movie = (
+        Movie.objects.filter(id=most_purchased['movie']).first()
+        if most_purchased else None
+    )
+
+    stats, _  = Statistic.objects.get_or_create(id=1)
+    stats.most_reviewed_movie = reviewed_movie
+    stats.most_purchased_movie = purchased_movie
+    stats.save()
+
+    return render(request, 'admin/statistics.html', {
+        'reviewed_movie': reviewed_movie,
+        'purchased_movie': purchased_movie,
+    })

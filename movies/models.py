@@ -18,4 +18,22 @@ class Review(models.Model):
         on_delete=models.CASCADE)
     def __str__(self):
         return str(self.id) + ' - ' + self.movie.name
+class Statistic(models.Model):
+    id = models.AutoField(primary_key=True)
+    most_reviewed_movie = models.ForeignKey(
+        Movie,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='most_reviewed_statistics'
+    )
+    most_purchased_movie = models.ForeignKey(
+        Movie,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='most_purchased_statistics'
+    )
+    def __str__(self):
+        return "Movie Statistics"
 # Create your models here.
