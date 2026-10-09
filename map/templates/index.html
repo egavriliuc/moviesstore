@@ -1,65 +1,28 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<div class="container my-4">
-    <h2>Map</h2>
-    <p class="text-muted">Choose a region to see trending movies</p>
+<!-- step 4, make map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@2.0.0-alpha.1/dist/leaflet.css"
-        integrity="sha256-P+hWJNlpL+GBSRYC7cdsDbQH91URmpDeOzLp7DbFRtE="
-        crossorigin=""/>
-    <script type="importmap">
-    {
-        "imports": {
-            "leaflet": "https://cdn.jsdelivr.net/npm/leaflet@2.0.0-alpha.1/dist/leaflet.js"
-        },
-        "integrity": {
-            "https://cdn.jsdelivr.net/npm/leaflet@2.0.0-alpha.1/dist/leaflet.js": "sha256-gj5JhNAaMi6LCs+jVFOk8sXDe1sWSS2Zlc87m+trLiQ="
-        }
-    }
-    </script>
+<h2>Trending Movies by Region</h2>
+<div id="map" style="height: 500px;"></div>
 
-    
-    <!-- leaflet map container -->
-     <div id="map" style="height: 520px; width: 100%; border-radius: 8px; border: 1px solid #ddd;"></div>
-        <div id="region-details" class="card mt-3" style="display: none;">
-            <div class="card-body">
-                <h4 id="region-name" class="card-title mb-3"></h4>
-                <h5>Trending Movies:</h5>
-                <ul id="movie-list" class="list-group list-group-flush"></ul>
-            </div>
-        </div>
-    </div>
+{{ regions|json_script:"regions-data" }}
 
+<script>
+    const regions = JSON.parse(document.getElementById('regions-data').textContent);
 
+    // ATL HOE
+    const map = L.map('map').setView([33.749, -84.388], 10);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map)
 
-    <!-- relavant map features -->
-    <script>
-        // init map
-        const map = new LeafletMap('map').setView([38.5, -96.0], 4);
-
-    
-        // load OpenStreetMap tiles
-        new TileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(map);
-
-        // dummy data (do later)
-        const mockRegions = [
-            {
-                name: 'Atlanta, GA',
-                lat: 33.7490,
-                lng: -843880,
-                movies: ['Skibidi', 'toilet']
-            },
-        ]
-
-        new Marker([51.5, -0.09]).addTo(map)
-            .bindPopup('A pretty CSS popup.<br> Easily customizable.')
-            .openPopup();
-
-    </script>
-
-</div>
+    regions.forEach(r => {
+        const list = r.movies.map(m => `<li>${m}</li>`).join('');
+        L.marker([r.lat, r.lng]).addTo(map).bindPopup(`<strong>${r.name}</strong><ul>${list}</ul>`);
+    })
+</script>
 
 {% endblock content %}
