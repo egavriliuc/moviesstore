@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Movie, Review, Statistic
+from .models import Movie, Review, Rating, Statistic
 from django.db.models import Count, Sum
 from django.shortcuts import render
 from cart.models import Item
@@ -10,6 +10,7 @@ class MovieAdmin(admin.ModelAdmin):
 
 admin.site.register(Movie, MovieAdmin)
 admin.site.register(Review)
+admin.site.register(Rating)
 @admin.register(Statistic)
 class StatisticsAdmin(admin.ModelAdmin):
     change_list_template = "admin/statistics.html"
