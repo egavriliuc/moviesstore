@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<h2>Trending Movies by Region</h2>
+<h2>Local Popularity Map</h2>
 <div id="map" style="height: 500px;"></div>
 
 {{ regions|json_script:"regions-data" }}
@@ -20,8 +20,18 @@
     }).addTo(map)
 
     regions.forEach(r => {
-        const list = r.movies.map(m => `<li>${m}</li>`).join('');
-        L.marker([r.lat, r.lng]).addTo(map).bindPopup(`<strong>${r.name}</strong><ul>${list}</ul>`);
+        const items = r.movies.map(m =>
+            `<li>${m.name}${m.score > 0 ? ` <em>(${m.score})</em> ` : ''} </li>`
+        ).join('');
+
+        const html = `
+            <strong>${r.name}</strong>
+            <div style="max-height: 200px; overflow-y: auto;">
+                <ul style="padding-left: 18px; margin: 6px 0 0;"> ${items} </ul>
+            </div>
+        `;
+
+        L.marker([r.lat, r.lng]).addTo(map).bindPopup(html);
     })
 </script>
 
