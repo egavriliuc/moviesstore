@@ -42,11 +42,26 @@ class StatisticsAdmin(admin.ModelAdmin):
             .first()
         )
 
+        most_comments = (
+            Review.objects.values('user_id', 'user__username')
+            .annotate(total=Count('id'))
+            .order_by('-total', 'user_id')
+            .first()
+        )
+
+        top_buyers = (
+            Item.objects.values('order__user_id', 'order__user__username')
+            .annotate(total=Sum('quantity'))
+            .order_by('-total', 'order__user_id')[:5]
+        )
+
         context = self.admin_site.each_context(request)
         context.update({
             'opts': self.model._meta,
             'reviewed_movie': most_reviewed,
             'purchased_movie': most_purchased,
+            'user_comments': most_comments,
+            'top_buyers': top_buyers,
         })
 
         return render(request, self.change_list_template, context)

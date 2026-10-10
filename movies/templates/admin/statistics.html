@@ -23,5 +23,28 @@
             <p>No purchases yet.</p>
         {% endif %}
     </div>
+
+    <div class="module">
+        <h2>Most User Comments</h2>
+        {% if user_comments %}
+            <p>{{ user_comments.user__username }}</p>
+            <p>Total copies purchased: {{ user_comments.total }}</p>
+        {% else %}
+            <p>No comments/reviews yet.</p>
+        {% endif %}
+    </div>
+
+    <div class="module">
+        <h2>Top Buyers</h2>
+        {% if top_buyers %}
+            <ol>
+                {% for buyer in top_buyers %}
+                    <li>{{ buyer.order__user__username }} — {{ buyer.total }}</li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <p>No purchases yet.</p>
+        {% endif %}
+    </div>
 </div>
 {% endblock %}
