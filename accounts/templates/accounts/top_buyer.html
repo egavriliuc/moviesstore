@@ -1,0 +1,14 @@
+{% extends "admin/base_site.html" %} {%block content%}
+<div id="content_main">
+  <div class="modul">
+    {%if top_buyer%}
+    <h2>User</h2>
+    <p>{{top_buyer.order__user__username}}</p>
+    <h2>Number of moview purchased</h2>
+    <p>{{top_buyer.total_purchased}}</p>
+    {%else%}
+    <h2>No purchases were made yet</h2>
+    {%endif%}
+  </div>
+</div>
+{% endblock %}
