@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- step 4, make map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<h2>Local Popularity Map</h2>
+<div id="map" style="height: 500px;"></div>
+
+{{ regions|json_script:"regions-data" }}
+
+<script>
+    const regions = JSON.parse(document.getElementById('regions-data').textContent);
+
+    // ATL HOE
+    const map = L.map('map').setView([33.749, -84.388], 10);
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map)
+
+    regions.forEach(r => {
+        const trending = r.movies.filter(m => m.score > 0)
+        const items = trending.length > 0 
+        ? trending.map(m => `<li>${m.name} <em>(${m.score})</em> </li>`).join('') 
+        : `<li><em> No trend </em></li>`;
+
+        const html = `
+            <strong>${r.name}</strong>
+            <div style="max-height: 200px; overflow-y: auto;">
+                <ul style="padding-left: 18px; margin: 6px 0 0;"> ${items} </ul>
+            </div>
+        `;
+
+        // markers
+        L.marker([r.lat, r.lng]).addTo(map).bindPopup(html);
+
+        // circles
+        L.circle([r.lat, r.lng], {
+            color: '#005f73',
+            fillColor: '#0a9396',
+            fillOpacity: 0.35,
+            radius: 4000
+        }).addTo(map).bindPopup(html);
+    })
+</script>
+
+{% endblock content %}
