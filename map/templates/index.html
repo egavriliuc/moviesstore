@@ -20,9 +20,10 @@
     }).addTo(map)
 
     regions.forEach(r => {
-        const items = r.movies.map(m =>
-            `<li>${m.name}${m.score > 0 ? ` <em>(${m.score})</em> ` : ''} </li>`
-        ).join('');
+        const trending = r.movies.filter(m => m.score > 0)
+        const items = trending.length > 0 
+        ? trending.map(m => `<li>${m.name} <em>(${m.score})</em> </li>`).join('') 
+        : `<li><em> No trend </em></li>`;
 
         const html = `
             <strong>${r.name}</strong>
@@ -31,7 +32,16 @@
             </div>
         `;
 
+        // markers
         L.marker([r.lat, r.lng]).addTo(map).bindPopup(html);
+
+        // circles
+        L.circle([r.lat, r.lng], {
+            color: '#005f73',
+            fillColor: '#0a9396',
+            fillOpacity: 0.35,
+            radius: 4000
+        }).addTo(map).bindPopup(html);
     })
 </script>
 
