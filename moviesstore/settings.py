@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-nma6a)uorszd=1g(+ioz_xve_!*-)%1p07g-@!lh!5lnmju4jv
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['egavriliuc.pythonanywhere.com']
 
 #map stuff
 SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
